@@ -45,7 +45,7 @@ Run the below command to start execution process and follow the instructions:
 ```
   python assignment_downloader.py
   ```
-**To visualize the what's happening inside, just comment the below lines in**  ``` assignment_downloader.py ```
+**To visualize the what's happening inside, just comment the below lines in**  ```assignment_downloader.py```
 ```
   display = Display()
   display.start()
