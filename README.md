@@ -8,6 +8,7 @@ Note: Apply ```sudo``` if required for your system.
 You should have some of the linux packages installed which are
 - google chrome
 - chrome webdriver
+- xvfb
 
 To install chrome driver follow the instructions:
 ```
@@ -25,13 +26,13 @@ To install chrome driver follow the instructions:
  ```
   sudo apt-get install unzip
 
-wget -N http://chromedriver.storage.googleapis.com/2.26/chromedriver_linux64.zip
-unzip chromedriver_linux64.zip
-chmod +x chromedriver
+  wget -N http://chromedriver.storage.googleapis.com/2.26/chromedriver_linux64.zip
+  unzip chromedriver_linux64.zip
+  chmod +x chromedriver
 
-sudo mv -f chromedriver /usr/local/share/chromedriver
-sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver
+  sudo mv -f chromedriver /usr/local/share/chromedriver
+  sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+  sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver
  ```
   Install the python dependencies by running:
 
