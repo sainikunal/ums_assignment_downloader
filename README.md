@@ -22,7 +22,7 @@ To install chrome driver follow the instructions:
  ```
   sudo apt-get install xvfb
  ```
- Time to install ChromeDrive and make it executable
+ Time to install ChromeDriver and make it executable
  ```
   sudo apt-get install unzip
 
