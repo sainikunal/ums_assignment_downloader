@@ -132,13 +132,16 @@ try:
 except:
 	os.chdir(directory)
 
-char1 = 10
-xpath_id = 0
-count = 5
+char1 = 8
+xpath_id = -1
+count = 3
 total_downloaded = 0
 listfiles = os.listdir(os.getcwd())
 
 for row in range(len(all_rows)):
+	xpath_id += 1
+
+	count += 2
 	
 	try:
 		
@@ -161,7 +164,7 @@ for row in range(len(all_rows)):
 			total_downloaded += 1
 			                  
 	except:
-			
+		char1 += 2
 		try:
 			string = 'ctl00_cphHeading_rgAssignment_ctl00_ctl'+str(char1)+'_lblFileUplaodByTeacher'
 			anchor1 = driver.find_element_by_id(string)
@@ -205,11 +208,6 @@ for row in range(len(all_rows)):
 			except:
 				pass
 	
-	xpath_id += 1
-
-	char1 += 2
-	
-	count += 2
 
 if total_downloaded == 0:
 	print 'No latest file available to download'
