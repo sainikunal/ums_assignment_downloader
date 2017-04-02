@@ -81,100 +81,84 @@ rows = table_id.find_elements(By.TAG_NAME, "tr")
 splitedText = {}
 
 index = 1
-total = 1
+total_courses = 1
 
 print '{:>10} {:>10}'.format('Options', 'Courses')
 for i,row in enumerate(rows):
-	if i == 0: continue
+	if not i: 
+		print '{:>7} {:>5} {:>21}'.format(i, ': ','Download content of every course')
+		continue
 	text = row.text.encode('utf-8').split('-')[0]
 	Text = (text).split(' ')
 	splitedText[i] = Text
 	
 	print '{:>7} {:>5} {:>21}'.format(i, ': ',text)
-	total += 1
+	total_courses += 1
 
 print ''
 option = int(raw_input("[*] Your Option : "))
 
-while option not in range(1,total):
+while option not in range(0,total_courses):
 	option = int(raw_input('[*] Valid Option : '))
 
-text = splitedText[option]
-if 'LABORATORY' in text:
-	print 'No assignment available for download'
-	sys.exit()
+parent_path = os.getcwd()
+def download_file(opt):
+	table_id = driver.find_element(By.ID,'ctl00_cphHeading_GridView1')
+	rows = table_id.find_elements(By.TAG_NAME, "tr")
+	text = splitedText[opt]
+
+	input_id = table_id.find_elements(By.TAG_NAME, "input")
 
 
+	for i,input_tag in enumerate(input_id):
+		if i+1 == opt:
+			input_tag.click()
+			directory = ' '.join(splitedText[i+1])
+			break
 
+	if 'LABORATORY' in text:
+		print 'No assignment available for download in ',directory
+		print ''
+		return
 
-input_id = table_id.find_elements(By.TAG_NAME, "input")
+	# download link starts from this 'tr' id
+	t_id = 'ctl00_cphHeading_rgAssignment_ctl00'
+	tr_id = driver.find_element(By.ID, t_id)
+	all_rows = tr_id.find_elements(By.TAG_NAME, "tr")
 
+	def download_message(message,ext):
+		print '[*] Downloading "%s.%s"' %(message,ext)
 
-for i,input_tag in enumerate(input_id):
-	if i+1 == option:
-		input_tag.click()
-		directory = ' '.join(splitedText[i+1])
-		break
-
-alt_id = driver.find_elements_by_tag_name('alt')
-
-# download link starts from this 'tr' id
-t_id = 'ctl00_cphHeading_rgAssignment_ctl00'
-tr_id = driver.find_element(By.ID, t_id)
-all_rows = tr_id.find_elements(By.TAG_NAME, "tr")
-
-def download_message(message,ext):
-	print '[*] Downloading "%s.%s"' %(message,ext)
-
-try:
-	os.mkdir(directory)
-	os.chdir(os.getcwd()+'/'+directory)
-except:
-	os.chdir(directory)
-
-char1 = 8
-xpath_id = -1
-count = 3
-total_downloaded = 0
-listfiles = os.listdir(os.getcwd())
-
-for row in range(len(all_rows)):
-	xpath_id += 1
-
-	count += 2
-	
 	try:
-		
-		string = 'ctl00_cphHeading_rgAssignment_ctl00_ctl0'+str(count)+'_lblFileUplaodByTeacher'
-		anchor = driver.find_element_by_id(string)
-		link = anchor.get_attribute('href')
-		
-		split_link = link.split('.')[-1]
-		response = urllib2.urlopen(link)
-		xpath = '//*[@id="ctl00_cphHeading_rgAssignment_ctl00__%s"]/td[7]' %xpath_id
-		filename = driver.find_element_by_xpath(xpath) #%str(xpath_id)
-		
-		# Skip if file already exists
-		if filename.text + '.' + split_link in listfiles:
-			continue
-
-		with open(filename.text +'.' + split_link,'w') as f:
-			download_message(filename.text, split_link)
-			f.write(response.read())
-			total_downloaded += 1
-			                  
+		os.mkdir(directory)
+		os.chdir(os.getcwd()+'/'+directory)
 	except:
-		char1 += 2
+		os.chdir(directory)
+
+	char1 = 8
+	xpath_id = -1
+	count = 3
+	total_downloaded = 0
+	listfiles = os.listdir(os.getcwd())
+
+	print 'Downloading Files under ', directory
+
+	for row in range(len(all_rows)):
+		xpath_id += 1
+
+		count += 2
+
 		try:
-			string = 'ctl00_cphHeading_rgAssignment_ctl00_ctl'+str(char1)+'_lblFileUplaodByTeacher'
-			anchor1 = driver.find_element_by_id(string)
-			
-			link1 = anchor1.get_attribute('href')
-			split_link = link1.split('.')[-1]
-			response = urllib2.urlopen(link1)
+
+			string = 'ctl00_cphHeading_rgAssignment_ctl00_ctl0'+str(count)+'_lblFileUplaodByTeacher'
+			anchor = driver.find_element_by_id(string)
+			link = anchor.get_attribute('href')
+
+			split_link = link.split('.')[-1]
+			response = urllib2.urlopen(link)
 			xpath = '//*[@id="ctl00_cphHeading_rgAssignment_ctl00__%s"]/td[7]' %xpath_id
-			filename = driver.find_element_by_xpath(xpath)
-			
+			filename = driver.find_element_by_xpath(xpath) #%str(xpath_id)
+
 			# Skip if file already exists
 			if filename.text + '.' + split_link in listfiles:
 				continue
@@ -183,37 +167,65 @@ for row in range(len(all_rows)):
 				download_message(filename.text, split_link)
 				f.write(response.read())
 				total_downloaded += 1
-				
+
 		except:
-			
+			char1 += 2
 			try:
-				string = 'ctl00_cphHeading_rgAssignment_ctl00_ctl'+str(char1)+'_lblNotRequired'
+				string = 'ctl00_cphHeading_rgAssignment_ctl00_ctl'+str(char1)+'_lblFileUplaodByTeacher'
 				anchor1 = driver.find_element_by_id(string)
-		
+
 				link1 = anchor1.get_attribute('href')
 				split_link = link1.split('.')[-1]
 				response = urllib2.urlopen(link1)
 				xpath = '//*[@id="ctl00_cphHeading_rgAssignment_ctl00__%s"]/td[7]' %xpath_id
 				filename = driver.find_element_by_xpath(xpath)
-				
+
 				# Skip if file already exists
 				if filename.text + '.' + split_link in listfiles:
 					continue
-				
+
 				with open(filename.text +'.' + split_link,'w') as f:
 					download_message(filename.text, split_link)
 					f.write(response.read())
 					total_downloaded += 1
-										
+
 			except:
-				pass
-	
 
-if total_downloaded == 0:
-	print 'No latest file available to download'
+				try:
+					string = 'ctl00_cphHeading_rgAssignment_ctl00_ctl'+str(char1)+'_lblNotRequired'
+					anchor1 = driver.find_element_by_id(string)
+
+					link1 = anchor1.get_attribute('href')
+					split_link = link1.split('.')[-1]
+					response = urllib2.urlopen(link1)
+					xpath = '//*[@id="ctl00_cphHeading_rgAssignment_ctl00__%s"]/td[7]' %xpath_id
+					filename = driver.find_element_by_xpath(xpath)
+
+					# Skip if file already exists
+					if filename.text + '.' + split_link in listfiles:
+						continue
+
+					with open(filename.text +'.' + split_link,'w') as f:
+						download_message(filename.text, split_link)
+						f.write(response.read())
+						total_downloaded += 1
+
+				except:
+					pass
+
+
+	if total_downloaded == 0:
+		print 'No latest file available to download in ',directory
+	else:
+		print '\nTotal Files Downloaded : ' + str(total_downloaded)
+		print ''
+	os.chdir(parent_path)
+
+if option == 0:
+	for x in range(1,total_courses):
+		download_file(x)
 else:
-	print '\nTotal Files Downloaded : ' + str(total_downloaded)
-
+	download_file(option)
 # print 'It might be possible that some files could be downloaded'
 driver.close()
 
